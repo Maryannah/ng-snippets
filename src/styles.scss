@@ -1,1 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+@use './app/snippets/overlays/overlays';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  @apply select-none outline-none transition-all duration-150 ease-in-out leading-[1];
+}
+
+button {
+  @apply border-2 border-primary-500 text-primary-500 font-semibold;
+  @apply px-4 py-2 rounded-lg;
+}

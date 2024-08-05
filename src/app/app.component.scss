@@ -1,0 +1,22 @@
+:host {
+  @apply h-full flex flex-row items-stretch justify-start;
+
+  li {
+    @apply px-8 py-2 bg-primary-50;
+    @apply cursor-pointer;
+
+    &:hover,
+    &:hover.__active {
+      @apply bg-primary-200;
+    }
+
+    &:active,
+    &:active.__active {
+      @apply scale-y-90 shadow-inner shadow-primary-400 bg-primary-300;
+    }
+
+    &.__active {
+      @apply font-medium text-primary-950;
+    }
+  }
+}
