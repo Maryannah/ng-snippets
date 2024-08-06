@@ -15,7 +15,7 @@ body {
   @apply select-none outline-none transition-all duration-300 ease-in-out leading-[1] origin-center;
 }
 
-button {
+button[designed] {
   @apply border-2 border-primary-500 text-primary-500 font-semibold;
   @apply px-4 py-2 rounded-lg;
 }

@@ -1,23 +1,23 @@
 <div class="grid place-items-stretch gap-4 grid-cols-3">
-  <button (click)="notify()">Notify (dismiss after 3s)</button>
-  <button (click)="notify({ duration: 0 })">Notify (dismiss on click)</button>
-  <button (click)="notify({ dismissable: false })">Notify (prevent dismiss)</button>
-  <button (click)="notify({ type: 'success' })">Notify success</button>
-  <button (click)="notify({ type: 'info' })">Notify info</button>
-  <button (click)="notify({ type: 'error' })">Notify error</button>
-  <button (click)="notify({ template: notificationTemplate })">Notify with custom template</button>
+  <button designed (click)="notify()">Notify (dismiss after 3s)</button>
+  <button designed (click)="notify({ duration: 0 })">Notify (dismiss on click)</button>
+  <button designed (click)="notify({ dismissable: false })">Notify (prevent dismiss)</button>
+  <button designed (click)="notify({ type: 'success' })">Notify success</button>
+  <button designed (click)="notify({ type: 'info' })">Notify info</button>
+  <button designed (click)="notify({ type: 'error' })">Notify error</button>
+  <button designed (click)="notify({ template: notificationTemplate })">Notify with custom template</button>
   <div class="col-span-2"></div>
-  <button (click)="dialog()">Open component dialog</button>
-  <button (click)="dialog(dialogTemplate)">Open template dialog</button>
-  <button (click)="dialog(undefined, { backdropClose: false })">Prevent backdrop click</button>
-  <button (click)="dialog(); dialog(); dialog()">Open 3 dialogs</button>
+  <button designed (click)="dialog()">Open component dialog</button>
+  <button designed (click)="dialog(dialogTemplate)">Open template dialog</button>
+  <button designed (click)="dialog(undefined, { backdropClose: false })">Prevent backdrop click</button>
+  <button designed (click)="dialog(); dialog(); dialog()">Open 3 dialogs</button>
 </div>
 
 <ng-template #notificationTemplate let-close>
   <span>Custom notification template</span>
-  <button (click)="close()">close</button>
+  <button designed (click)="close()">close</button>
 </ng-template>
 <ng-template #dialogTemplate let-data="data" let-close="close">
   <pre><code>{{ data | json }}</code></pre>
-  <button (click)="close()" class="mt-4 w-full">close</button>
+  <button designed (click)="close()" class="mt-4 w-full">close</button>
 </ng-template>
