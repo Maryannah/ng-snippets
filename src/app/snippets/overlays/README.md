@@ -40,6 +40,7 @@ class MyComponent {
 
 ### Dialogs
 
-- The last one opened is displayed, the previous ones are hidden with CSS
+- The last one opened is displayed, the previous ones docked to the bottom of the screen
+  - You can select them to switch them with the main one
 - They get dismissed when clicking on the backdrop
 - They get dismissed if the router is used

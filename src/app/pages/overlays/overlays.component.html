@@ -10,6 +10,7 @@
   <button (click)="dialog()">Open component dialog</button>
   <button (click)="dialog(dialogTemplate)">Open template dialog</button>
   <button (click)="dialog(undefined, { backdropClose: false })">Prevent backdrop click</button>
+  <button (click)="dialog(); dialog(); dialog()">Open 3 dialogs</button>
 </div>
 
 <ng-template #notificationTemplate let-close>

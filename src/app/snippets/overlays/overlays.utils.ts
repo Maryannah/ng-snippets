@@ -2,9 +2,9 @@ import { DOCUMENT, NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import {
   createComponent as _createComponent,
   ApplicationRef,
+  ChangeDetectorRef,
   Component,
   ComponentRef,
-  computed,
   DestroyRef,
   EnvironmentInjector,
   inject,
@@ -278,8 +278,21 @@ class NotificationsComponent {
   imports: [NgTemplateOutlet, NgComponentOutlet],
   host: { '[class.__dialogs-container]': 'true' },
   template: `<div class="__backdrop" (click)="backdropClick()"></div>
+    @let current = currentDialog();
+    @let currentIndex = dialogs().indexOf(current);
     @for (dialog of dialogs(); track dialog) {
-      <div class="__panel" [class.__hidden]="!$last">
+      @let isCurrent = dialog === current;
+      @let afterCurrent = $index > currentIndex;
+      @let factor = afterCurrent ? $index - 1 : $index;
+      @let translate = !isCurrent ? factor * 100 : '';
+      @let margin = !isCurrent ? factor * 1 : '';
+
+      <div
+        class="__panel"
+        [class.__hidden]="!isCurrent"
+        [style.translate.%]="translate"
+        [style.margin-left.rem]="margin"
+        (click)="setActiveDialog(dialog)">
         @if (isComponent(dialog.portal)) {
           <ng-container *ngComponentOutlet="dialog.portal; injector: dialog.injector"></ng-container>
         } @else if (isTemplate(dialog.portal)) {
@@ -291,8 +304,9 @@ class NotificationsComponent {
 class DialogsComponent {
   private router = inject(Router, { optional: true });
   private destroyRef = inject(DestroyRef);
+  private cd = inject(ChangeDetectorRef);
   protected dialogs = signal<AppDialog<any, any>[]>([]);
-  private currentDialog = computed(() => this.dialogs().at(-1));
+  protected currentDialog = signal<AppDialog<any, any>>(undefined!);
 
   public allDismissed = output<void>();
 
@@ -310,7 +324,6 @@ class DialogsComponent {
       configuration,
       __closeEmitter: new Subject(),
     } as typeof dialog);
-    this.dialogs.update((d) => [...d, dialog]);
     if (configuration.navigationClose && this.router)
       this.router.events
         .pipe(
@@ -319,6 +332,8 @@ class DialogsComponent {
           take(1),
         )
         .subscribe(() => this.removeDialog(dialog));
+    this.dialogs.update((d) => [...d, dialog]);
+    this.currentDialog.set(dialog);
     return dialog;
   }
 
@@ -326,11 +341,18 @@ class DialogsComponent {
     dialog.__closeEmitter?.next();
     this.dialogs.update((d) => d.filter((d) => d !== dialog));
     if (!this.dialogs().length) this.allDismissed.emit();
+    else this.currentDialog.set(this.dialogs().at(-1)!);
+    this.cd.detectChanges(); // Bugfix if you call the closeProvider.useValue function (TODO FIX)
   }
 
   clearDialogs() {
     this.dialogs.set([]);
+    this.currentDialog.set(undefined!);
     this.allDismissed.emit();
+  }
+
+  setActiveDialog(dialog: AppDialog<any, any> & Partial<ActionEmitter>) {
+    this.currentDialog.set(dialog);
   }
 
   protected backdropClick() {

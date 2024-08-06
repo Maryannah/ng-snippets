@@ -27,7 +27,7 @@ export default class OverlaysComponent {
   }
 
   dialog(template?: TemplateRef<any>, config?: Partial<AppDialogConfig>) {
-    const data = { mode: template ? 'template' : 'component' };
+    const data = { mode: template ? 'template' : 'component', number: Math.round(Math.random() * 100000) };
     const { closed } = this.dialogs.add(template ?? DialogDemoComponent, data, config);
     closed.subscribe(() => console.log('Dialog dismissed'));
   }

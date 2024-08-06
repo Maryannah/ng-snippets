@@ -57,8 +57,11 @@
     left: 0;
     height: 100%;
     width: 100%;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-flow: row;
+    align-items: flex-end;
+    justify-content: flex-start;
+    gap: 1rem;
     pointer-events: all; /* IMPORTANT: Allows user to interact with the backdrop & dialogs */
 
     .__backdrop {
@@ -72,7 +75,10 @@
     }
 
     .__panel {
-      position: relative;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
       z-index: 1;
       background-color: white;
       box-shadow: 1px 1px 3px 1px rgba(black, 0.5);
@@ -80,7 +86,11 @@
       border-radius: 0.25rem;
 
       &.__hidden {
-        display: none;
+        margin-top: -1rem;
+        top: 100%;
+        left: 1rem;
+        translate: 0%;
+        cursor: pointer;
       }
     }
   }
