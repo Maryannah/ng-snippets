@@ -9,7 +9,19 @@
 - You can customize the style of the features easily
 - You don't need to be up-to-date on the latest features of the library
 - In a single glance at the feature, you can understand all of its behavior
+- The snippets must be kept simple to understand to avoid clutter
 - Since all features are single-filed, you don't have complex dependencies between them
+
+## Disclaimer
+
+The snippets available in this repository are **not made to be perfect !**
+
+- They don't implement a11y, i18n, or other a24z concept
+- They don't offer ultra advanced features
+- They don't offer the latest trending designs
+
+They are merely scaffholding bases for you to use and evolve.  
+They are made to work without additional development, but for the best results, you should take a minimal amount of time to customize them to your needs.
 
 ## About the styles ...
 
