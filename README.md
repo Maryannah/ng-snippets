@@ -71,3 +71,28 @@ You are not forced to read it, but I will try to keep them very concise so that 
 - [Forms](./src/app/snippets/forms)
   - [Form field](./src/app/snippets/forms/form-field)
   - [Datepicker](./src/app/snippets/forms/datepicker)
+
+## Contributing
+
+Are accepted contributions :
+
+- Requesting/developing a worldwide-used new feature
+- Requesting/developing a worldwide-used feature evolution
+- Raising a bug in one of the available features
+- Improving the code quality where needed (& when needed)
+- Updating the project versions
+
+Will not be accepted :
+
+- Resolving a typo in the documentation for your github activity
+- Requesting a very specific, business-centered new feature
+- Requesting a very specific, business-centered feature evolution
+
+Those lists are not exhaustive but give a general approach to contributing. The bottom-line can be summed-up with :
+
+> If it's useful for either the project, or 95% of developers using those snippets, I shall accept it
+
+**You are free to cpoy/paste & fork this repository to extend & modify it to cater to your needs**
+
+I would simply appreciate that you put either my username, or my repository link, somewhere in your project.  
+_<sub>(Spoiler : I will never know if you really do it)</sub>_
