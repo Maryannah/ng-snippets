@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { APP_ROUTES } from './app.routes';
+import { routes } from './app.routes';
 
 @Component({
   selector: 'snip-root',
@@ -11,5 +11,5 @@ import { APP_ROUTES } from './app.routes';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-  protected routes = inject(APP_ROUTES);
+  protected routes = routes;
 }

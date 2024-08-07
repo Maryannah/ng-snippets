@@ -1,8 +1,8 @@
 <div class="flex flex-lock shadow-md shadow-black/50">
   <ul class="py-4 flex flex-col items-stretch justify-start gap-1">
-    <li role="link" href="#" [routerLink]="routes.overlays()" routerLinkActive="font-bold">Overlays</li>
-    <li role="link" href="#" [routerLink]="routes.datepicker()" routerLinkActive="font-bold">Datepicker</li>
-    <li role="link" href="#" [routerLink]="routes.formfield()" routerLinkActive="font-bold">Form fields</li>
+    @for (route of routes; track route) {
+      <li role="link" href="#" [routerLink]="route.path" routerLinkActive="font-bold">{{ $any(route.data).label }}</li>
+    }
   </ul>
 </div>
 <div class="flex-fill grid place-items-stretch p-4">

@@ -10,7 +10,19 @@ const appRoutes = {
 export const APP_ROUTES = new InjectionToken('NgSnippetsApplicationRoutes', { factory: () => appRoutes });
 
 export const routes: Route[] = [
-  { path: appRoutes.overlays(), loadComponent: () => import('./pages/overlays/overlays.component') },
-  { path: appRoutes.datepicker(), loadComponent: () => import('./pages/datepicker/datepicker.component') },
-  { path: appRoutes.formfield(), loadComponent: () => import('./pages/form-field/form-field.component') },
+  {
+    data: { label: 'Overlays' },
+    path: appRoutes.overlays(),
+    loadComponent: () => import('./pages/overlays/overlays.component'),
+  },
+  {
+    data: { label: 'Datepicker' },
+    path: appRoutes.datepicker(),
+    loadComponent: () => import('./pages/datepicker/datepicker.component'),
+  },
+  {
+    data: { label: 'Form field' },
+    path: appRoutes.formfield(),
+    loadComponent: () => import('./pages/form-field/form-field.component'),
+  },
 ];
