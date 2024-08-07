@@ -1,4 +1,4 @@
-import { Component, computed, inject, LOCALE_ID, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, LOCALE_ID, output, signal } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
 
 const firstWeekday = 1; // Sunday = 0
@@ -22,6 +22,7 @@ export function toDate(value: DateLike = new Date(), throwError = true): Date | 
 @Component({
   selector: 'ui-datepicker',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [],
   template: `
     @let preview = previewDate();
@@ -30,11 +31,11 @@ export function toDate(value: DateLike = new Date(), throwError = true): Date | 
 
     <div class="__header">
       <button (click)="viewMode.set('year')">
-        {{ controlValue.getFullYear() }}
+        {{ preview.getFullYear() }}
       </button>
       <span style="flex: 1 1 0%"></span>
       <button (click)="viewMode.set('month')">
-        {{ months[controlValue.getMonth()] || '' }}
+        {{ months[preview.getMonth()] || '' }}
       </button>
       <span style="flex: 1 1 0%"></span>
       <button [disabled]="disableIncrements" (click)="increment(0)">↑</button>
