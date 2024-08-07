@@ -37,7 +37,7 @@ export default class OverlaysComponent {
   standalone: true,
   imports: [JsonPipe],
   template: `<pre><code>{{ data | json }}</code></pre>
-    <button (click)="close()" class="mt-4 w-full">close</button>`,
+    <button designed (click)="close()" class="mt-4 w-full">close</button>`,
 })
 export class DialogDemoComponent {
   protected data = inject(DIALOG_DATA);

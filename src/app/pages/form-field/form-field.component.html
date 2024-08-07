@@ -1,0 +1,17 @@
+<ui-form-field>
+  <label ui-label>Username</label>
+
+  <span ui-zone="prefix">
+    <button (click)="control.reset()">X</button>
+  </span>
+
+  <input ui-input type="text" placeholder="Username ..." [formControl]="control" />
+
+  <span ui-zone="suffix">
+    <ui-type-switch></ui-type-switch>
+  </span>
+
+  <span ui-zone="hint">Input hint</span>
+
+  <ng-template ui-error="minlength" let-err> {{ err.actualLength }} / {{ err.requiredLength }} </ng-template>
+</ui-form-field>
