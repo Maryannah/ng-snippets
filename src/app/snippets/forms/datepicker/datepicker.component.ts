@@ -38,8 +38,8 @@ export function toDate(value: DateLike = new Date(), throwError = true): Date | 
         {{ months[preview.getMonth()] || '' }}
       </button>
       <span style="flex: 1 1 0%"></span>
-      <button [disabled]="disableIncrements" (click)="increment(0)">↑</button>
-      <button [disabled]="disableIncrements" (click)="increment(-1)">↓</button>
+      <button [disabled]="disableIncrements" (click)="increment(0)">⬆️</button>
+      <button [disabled]="disableIncrements" (click)="increment(-1)">⬇️</button>
     </div>
     @if (mode === 'day') {
       <div class="__calendar">
