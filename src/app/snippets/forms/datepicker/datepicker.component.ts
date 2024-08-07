@@ -212,7 +212,6 @@ export class DatepickerComponent implements ControlValueAccessor {
       const offset = this.years().at(value)!;
       const boundary = toDate(this.previewDate())!;
       const nextDate = boundary.setFullYear(offset + Math.ceil(this.yearsPerView / 2) * (value ? 1 : -1));
-      console.log(toDate(nextDate));
       this.previewDate.set(toDate(nextDate)!);
     }
   }
