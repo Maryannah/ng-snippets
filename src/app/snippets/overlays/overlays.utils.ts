@@ -2,6 +2,7 @@ import { DOCUMENT, NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import {
   createComponent as _createComponent,
   ApplicationRef,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentRef,
@@ -221,6 +222,7 @@ type ActionEmitter = { __closeEmitter: Subject<void> };
 /** @internal Component that shows the notifications */
 @Component({
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet],
   host: { '[class.__notifications-container]': 'true' },
   template: `@for (notification of notifications(); track notification) {
@@ -253,7 +255,7 @@ class NotificationsComponent {
     notification.__closeEmitter = new Subject<void>();
     if (notification.duration)
       timer(notification.duration)
-        .pipe(takeUntilDestroyed(this.destroyRef), takeUntil(notification.__closeEmitter), single())
+        .pipe(takeUntilDestroyed(this.destroyRef), takeUntil(notification.__closeEmitter), take(1))
         .subscribe(() => notificationsComponent?.instance.removeNotification(notification));
     return notification.__closeEmitter.asObservable().pipe(take(1));
   }
@@ -275,6 +277,7 @@ class NotificationsComponent {
 /** @internal Component that shows the dialogs */
 @Component({
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet, NgComponentOutlet],
   host: { '[class.__dialogs-container]': 'true' },
   template: `<div class="__backdrop" (click)="backdropClick()"></div>
