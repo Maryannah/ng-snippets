@@ -66,11 +66,11 @@ You are not forced to read it, but I will try to keep them very concise so that 
 
 ## Available features
 
-- [Routing helpers](./src/app/snippets/routing)
-- [Overlays](./src/app/snippets/overlays) (notifications, dialogs, ...)
-- [Forms](./src/app/snippets/forms)
-  - [Form field](./src/app/snippets/forms/form-field)
-  - [Datepicker](./src/app/snippets/forms/datepicker)
+- [Routing helpers](./projects/snippets/src/lib/routing)
+- [Overlays](./projects/snippets/src/lib/overlays) (notifications, dialogs, ...)
+- [Forms](./projects/snippets/src/lib/forms)
+  - [Form field](./projects/snippets/src/lib/forms/form-field)
+  - [Datepicker](./projects/snippets/src/lib/forms/datepicker)
 
 ## Contributing
 

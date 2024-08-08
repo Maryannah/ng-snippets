@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FormFieldModule } from '../../snippets/forms/form-field/form-field.scam';
+import { FormFieldModule } from '@snippets/forms/form-field/form-field.scam';
 
 @Component({
   selector: 'snip-form-field',

@@ -7,7 +7,7 @@ import {
   DIALOG_DATA,
   injectDialogs,
   injectNotifications,
-} from '../../snippets/overlays/overlays.utils';
+} from '@snippets/overlays/overlays.utils';
 
 @Component({
   selector: 'snip-overlays',

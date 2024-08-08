@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { DatepickerComponent } from '../../snippets/forms/datepicker/datepicker.component';
+import { DatepickerComponent } from '@snippets/forms/datepicker/datepicker.component';
 
 @Component({
   selector: 'snip-datepicker',
