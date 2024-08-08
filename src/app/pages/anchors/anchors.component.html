@@ -1,0 +1,53 @@
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+
+<div
+  class="grid grid-cols-4 place-items-stretch gap-4 place-self-stretch grid-rows-[max-content_max-content_1fr] p-4 border border-black">
+  <label class="text-sm font-bold place-self-center">Anchor corner Y</label>
+  <select #AY>
+    <option value="top">Top</option>
+    <option value="middle">Middle</option>
+    <option value="bottom">Bottom</option>
+  </select>
+
+  <label class="text-sm font-bold place-self-center">Target corner Y</label>
+  <select #TY>
+    <option value="top">Top</option>
+    <option value="middle">Middle</option>
+    <option value="bottom">Bottom</option>
+  </select>
+
+  <label class="text-sm font-bold place-self-center">Anchor corner X</label>
+  <select #AX>
+    <option value="left">Left</option>
+    <option value="center">Center</option>
+    <option value="right">Right</option>
+  </select>
+
+  <label class="text-sm font-bold place-self-center">Target corner X</label>
+  <select #TX>
+    <option value="left">Left</option>
+    <option value="center">Center</option>
+    <option value="right">Right</option>
+  </select>
+
+  <div class="col-span-4 grid place-items-center">
+    <button designed (click)="openBound($any($event.target), tpl, getPosition(AY, AX, TY, TX))">
+      Open custom-placed anchor
+    </button>
+  </div>
+</div>
+
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+
+<ng-template #tpl let-data="data">
+  <div class="bg-white p-4 rounded-md shadow shadow-black inline-block">
+    <span>This is a template reference</span> <br />
+    <pre><code>{{ data }}</code></pre>
+  </div>
+</ng-template>

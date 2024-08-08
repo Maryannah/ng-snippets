@@ -12,7 +12,7 @@ body {
 }
 
 * {
-  @apply select-none outline-none transition-all duration-300 ease-in-out leading-[1] origin-center;
+  @apply select-none outline-none leading-[1] origin-center;
 }
 
 button[designed] {
