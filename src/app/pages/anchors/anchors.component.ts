@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core';
-import { AnchorConfiguration, injectAnchors } from '@snippets/anchors/anchors.utils';
+import { AnchorConfiguration, withAnchors } from '@snippets/anchors/anchors.overlays';
+import { provideOverlays } from '@snippets/anchors/overlays.common';
 
 @Component({
   selector: 'snip-anchors',
@@ -10,7 +11,7 @@ import { AnchorConfiguration, injectAnchors } from '@snippets/anchors/anchors.ut
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class AnchorsComponent {
-  anchors = injectAnchors();
+  anchors = provideOverlays(withAnchors());
   data = JSON.stringify({ some: 'data' });
 
   openBound(
