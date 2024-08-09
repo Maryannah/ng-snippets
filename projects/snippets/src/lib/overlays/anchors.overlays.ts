@@ -1,5 +1,5 @@
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, ElementRef, model, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, Injector, model, TemplateRef } from '@angular/core';
 import { race, take } from 'rxjs';
 import { OverlayExtensionHelperArg, OverlayPortal } from './overlays.common';
 
@@ -35,6 +35,7 @@ export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D
     clickOutside,
     scrollOutside,
     createContainer,
+    createHandler,
   }: OverlayExtensionHelperArg) {
     return {
       /** Anchors the given portal to the given element, with the given configuration.
@@ -61,8 +62,10 @@ export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D
         if (config?.capturePointer) container.style.pointerEvents = 'all';
         else container.style.pointerEvents = 'none';
         const ref = createComponent(AnchorDisplayComponent, container);
+        const { close, closed, context, injector } = createHandler(config?.data, () => ref.destroy());
         ref.instance.$portal.set(portal);
-        ref.instance.$data.set(config?.data ?? null);
+        ref.instance.$context.set(context);
+        ref.instance.$injector.set(injector);
         ref.instance.$targetrect.set(element.getBoundingClientRect());
         ref.instance.$anchoring.set(config.anchoring);
 
@@ -71,6 +74,8 @@ export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D
             .pipe(take(1))
             .subscribe(() => ref.destroy()),
         );
+
+        return { close, closed };
       },
     };
   };
@@ -85,7 +90,7 @@ export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D
     @if (isTemplate(portal)) {
       <ng-container *ngTemplateOutlet="portal; context: $context()"></ng-container>
     } @else {
-      <ng-container *ngComponentOutlet="portal"></ng-container>
+      <ng-container *ngComponentOutlet="portal; injector: $injector()"></ng-container>
     }
   `,
   styles: `
@@ -104,10 +109,10 @@ export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D
 class AnchorDisplayComponent<T, D> {
   $portal = model.required<OverlayPortal<T, D>>();
   $targetrect = model.required<DOMRect>();
-  $data = model<D>(null!);
   $anchoring = model<AnchorConfiguration<any>['anchoring']>('auto');
 
-  protected $context = computed(() => ({ data: this.$data() }));
+  $context = model.required<any>();
+  $injector = model.required<Injector>();
 
   /** @internal determine the position of the anchor given various parameters */
   private $offsets = computed<Record<'top' | 'left' | 'translate', number | string>>(() => {
@@ -174,9 +179,9 @@ class AnchorDisplayComponent<T, D> {
 }
 
 // Internal interfaces
-type AnchoringPositionsX = 'left' | 'center' | 'right';
-type AnchoringPositionsY = 'top' | 'middle' | 'bottom';
-type AnchoringKeys = `${AnchoringPositionsY} ${AnchoringPositionsX}`;
+export type AnchoringPositionsX = 'left' | 'center' | 'right';
+export type AnchoringPositionsY = 'top' | 'middle' | 'bottom';
+export type AnchoringKeys = `${AnchoringPositionsY} ${AnchoringPositionsX}`;
 
 /** Anchor configuration that can be provided to `injectAnchors` or at every utuility function call */
 export type AnchorConfiguration<D> = Partial<{

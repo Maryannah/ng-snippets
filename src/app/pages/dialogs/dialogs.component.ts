@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, TemplateRef, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AppDialogConfig, DIALOG_CLOSE_FN, DIALOG_DATA, withDialogs } from '@snippets/overlays/dialogs.overlays';
-import { provideOverlays } from '@snippets/overlays/overlays.common';
+import { AppDialogConfig, withDialogs } from '@snippets/overlays/dialogs.overlays';
+import { OVERLAY_CLOSER, OVERLAY_DATA, provideOverlays } from '@snippets/overlays/overlays.common';
 import { APP_ROUTES } from '../../app.routes';
 
 @Component({
@@ -47,8 +47,8 @@ export default class DialogsComponent {
   `,
 })
 export class DialogTestComponent {
-  data = inject(DIALOG_DATA);
-  close = inject(DIALOG_CLOSE_FN);
+  data = inject(OVERLAY_DATA);
+  close = inject(OVERLAY_CLOSER);
   router = inject(Router);
   routes = inject(APP_ROUTES);
 }

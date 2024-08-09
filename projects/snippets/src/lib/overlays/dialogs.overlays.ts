@@ -6,10 +6,8 @@ import {
   ComponentRef,
   DestroyRef,
   inject,
-  InjectionToken,
   Injector,
   output,
-  Provider,
   signal,
   TemplateRef,
   Type,
@@ -22,14 +20,6 @@ import { ActionEmitter, OverlayExtensionHelperArg, OverlayPortal } from './overl
 const containerName = 'dialogs-container';
 let component: ComponentRef<DialogsComponent>;
 
-/** Use this token to inject your dialog data into your component */
-export const DIALOG_DATA = new InjectionToken<any>('NgSnippetsDialogData');
-/** Use this token to get a function used to close the dialog from within itself */
-export const DIALOG_CLOSE_FN = new InjectionToken<() => void>('NgSnippetsDialogCloseFunction');
-
-/** @internal */
-type AppDialogPortal<T, C> = Type<T> | TemplateRef<C>;
-
 export type AppDialogConfig = {
   /** When true, the dialog gets closed when the user clicks on the backdrop */
   backdropClose: boolean;
@@ -38,14 +28,14 @@ export type AppDialogConfig = {
 };
 
 export type AppDialog<T, C> = {
-  portal: AppDialogPortal<T, C>;
+  portal: OverlayPortal<T, C>;
   injector: Injector;
   context: C;
   configuration: AppDialogConfig;
 };
 
 /** Use this composable function to provide notifications to your overlays.
- * 
+ *
  * Dialogs are overlays that are displayed on a dark backdrop to get the focus of the user.
  *
  * @example
@@ -56,10 +46,10 @@ export type AppDialog<T, C> = {
  * ```
  */
 export function withDialogs(baseConfiguration?: Partial<AppDialogConfig>) {
-  return function ({ initContainer, createComponent, createContainer }: OverlayExtensionHelperArg) {
+  return function ({ initContainer, createComponent, createContainer, createHandler }: OverlayExtensionHelperArg) {
     return {
       /** Opens a dialog for the user
-       * 
+       *
        * @param portal The portal to display (component class / template ref)
        * @param data Optional data to pass to the component
        * @param configuration Optional configuration
@@ -84,7 +74,11 @@ export function withDialogs(baseConfiguration?: Partial<AppDialogConfig>) {
           });
         }
 
-        component.instance.addDialog(portal, data, config);
+        let dialog: AppDialog<any, any>;
+        const { close, closed, context, injector } = createHandler(data, () => component.instance.removeDialog(dialog));
+        dialog = component.instance.addDialog(portal, config, context, injector);
+
+        return { close, closed };
       },
     };
   };
@@ -174,13 +168,9 @@ class DialogsComponent {
 
   public allDismissed = output<void>();
 
-  addDialog<T, C>(portal: OverlayPortal<T, C>, data: any, configuration: AppDialogConfig) {
+  addDialog<T, C>(portal: OverlayPortal<T, C>, configuration: AppDialogConfig, context: C, injector: Injector) {
     const dialog: AppDialog<T, C> & Partial<ActionEmitter> = <any>{}; // Workaround to inject the closeProvider after injector creation
-    const dataProvider: Provider = { provide: DIALOG_DATA, useValue: data };
-    const closeProvider: Provider = { provide: DIALOG_CLOSE_FN, useValue: () => this.removeDialog(dialog) };
-    const providers: Provider[] = [dataProvider, closeProvider];
-    const injector = Injector.create({ providers });
-    const context: C = <C>{ data, close: closeProvider.useValue };
+
     Object.assign(dialog, {
       portal,
       injector,

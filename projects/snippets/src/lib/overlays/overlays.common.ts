@@ -5,6 +5,9 @@ import {
   ComponentRef,
   EnvironmentInjector,
   inject,
+  InjectionToken,
+  Injector,
+  Provider,
   TemplateRef,
   Type,
 } from '@angular/core';
@@ -25,6 +28,11 @@ const styles = `.__${mainContainerName} {
   height: 100%;
   pointer-events: none;
 }`;
+
+/** Use this token to inject your dialog data into your component */
+export const OVERLAY_DATA = new InjectionToken<any>('NgSnippetsOverlayData');
+/** Use this token to get a function used to close the dialog from within itself */
+export const OVERLAY_CLOSER = new InjectionToken<() => void>('NgSnippetsOverlayCloser');
 
 /** @internal */
 export type ActionEmitter = { __closeEmitter: Subject<void> };
@@ -59,11 +67,13 @@ export type OverlayExtensionHelperArg = {
   clickOutside: (container: HTMLElement) => Observable<any>;
   /** Observable that emits when the user scrolls/swipes outside of the given container (single emission, cold observable) */
   scrollOutside: (container: HTMLElement) => Observable<any>;
+  /** Function that creates an overlay handle (closing, closed) & data handles (injector, context) */
+  createHandler: typeof createOverlayHandler;
 };
 
 /** Use this function to provides overlay features to your Angular element.
  *
- * @example 
+ * @example
  * ```typescript
  * class MyClass {
  *   dialogs = provideOverlays(withDialogs());
@@ -86,6 +96,7 @@ export function provideOverlays<T extends any[]>(...extensions: T): Composable<T
     createComponent: (component, container) => createComponent(component, injector, appRef, container),
     clickOutside: (container) => clickedOutside(doc, container),
     scrollOutside: (container) => scrolledOutside(doc, container),
+    createHandler: (data, fn) => createOverlayHandler(data, fn),
   };
 
   const ret: Composable<T> = {} as any;
@@ -166,6 +177,24 @@ function scrolledOutside(doc: Document, container: HTMLElement) {
     filter(Boolean),
     take(1),
   );
+}
+
+/** @internal Function that creates overlay handlers & data handlers for the extensions */
+function createOverlayHandler<D>(data: D, closingFn: () => void) {
+  const emitter = new Subject<void>();
+  const closed = emitter.asObservable().pipe(take(1));
+  const close = () => (closingFn(), emitter.next(), emitter.complete());
+
+  const context = { data, close };
+
+  const providers: Provider[] = [
+    { provide: OVERLAY_DATA, useValue: data },
+    { provide: OVERLAY_CLOSER, useValue: close },
+  ];
+
+  const injector = Injector.create({ providers });
+
+  return { closed, close, context, injector };
 }
 
 /** @internal customized composable type */

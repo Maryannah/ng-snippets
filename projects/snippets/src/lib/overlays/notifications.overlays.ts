@@ -36,7 +36,7 @@ export type AppNotification = {
  * ```
  */
 export function withNotifications(baseConfiguration?: Partial<AppNotification>) {
-  return function ({ initContainer, createComponent, createContainer }: OverlayExtensionHelperArg) {
+  return function ({ initContainer, createComponent, createContainer, createHandler }: OverlayExtensionHelperArg) {
     return {
       /** Creates a notification for the user
        *
@@ -65,9 +65,11 @@ export function withNotifications(baseConfiguration?: Partial<AppNotification>) 
           });
         }
 
+        const { close, closed } = createHandler(null, () => component.instance.removeNotification(notification));
+
         component.instance.addNotification(notification);
 
-        return {};
+        return { close, closed };
       },
     };
   };

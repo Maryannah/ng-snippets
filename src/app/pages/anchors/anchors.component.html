@@ -1,53 +1,58 @@
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
+<div class="flex flex-row items-center justify-start gap-4">
+  <form #form="ngForm" class="inline-grid grid-cols-2 items-center justify-items-stretch gap-4">
+    <span>User-defined data</span>
+    <input designed type="text" [(ngModel)]="config.data" name="data" />
 
-<div
-  class="grid grid-cols-4 place-items-stretch gap-4 place-self-stretch grid-rows-[max-content_max-content_1fr] p-4 border border-black">
-  <label class="text-sm font-bold place-self-center">Anchor corner Y</label>
-  <select #AY>
-    <option value="top">Top</option>
-    <option value="middle">Middle</option>
-    <option value="bottom">Bottom</option>
-  </select>
+    <span>Capture pointer events</span>
+    <input designed type="checkbox" [(ngModel)]="config.capturePointer" name="capturePointer" />
 
-  <label class="text-sm font-bold place-self-center">Target corner Y</label>
-  <select #TY>
-    <option value="top">Top</option>
-    <option value="middle">Middle</option>
-    <option value="bottom">Bottom</option>
-  </select>
+    <span>Use template</span>
+    <input designed type="checkbox" #useTemplate />
 
-  <label class="text-sm font-bold place-self-center">Anchor corner X</label>
-  <select #AX>
-    <option value="left">Left</option>
-    <option value="center">Center</option>
-    <option value="right">Right</option>
-  </select>
+    <span>Use auto positioning</span>
+    <input designed type="checkbox" [(ngModel)]="useAuto" name="auto" />
 
-  <label class="text-sm font-bold place-self-center">Target corner X</label>
-  <select #TX>
-    <option value="left">Left</option>
-    <option value="center">Center</option>
-    <option value="right">Right</option>
-  </select>
+    @if (!useAuto) {
+      <span>Anchor corner Y</span>
+      <select designed [(ngModel)]="position.AY" name="AY">
+        <option value="top">Top</option>
+        <option value="middle">Middle</option>
+        <option value="bottom">Bottom</option>
+      </select>
+      <span>Anchor corner X</span>
+      <select designed [(ngModel)]="position.AX" name="AX">
+        <option value="left">Left</option>
+        <option value="center">Center</option>
+        <option value="right">Right</option>
+      </select>
 
-  <div class="col-span-4 grid place-items-center">
-    <button designed (click)="openBound($any($event.target), tpl, getPosition(AY, AX, TY, TX))">
-      Open custom-placed anchor
-    </button>
+      <span>Target corner Y</span>
+      <select designed [(ngModel)]="position.TY" name="TY">
+        <option value="top">Top</option>
+        <option value="middle">Middle</option>
+        <option value="bottom">Bottom</option>
+      </select>
+
+      <span>Target corner X</span>
+      <select designed [(ngModel)]="position.TX" name="TX">
+        <option value="left">Left</option>
+        <option value="center">Center</option>
+        <option value="right">Right</option>
+      </select>
+    }
+
+    <button type="submit" class="place-self-start" designed (click)="anchor(useTemplate.checked)">Anchor</button>
+  </form>
+
+  <div class="flex-fill grid place-items-center">
+    <div class="border-2 border-primary-500 p-4 font-bold" #target>Anchor target</div>
   </div>
 </div>
 
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
-<button designed (click)="openBound($any($event.target), tpl)">Open bound anchor, auto-placed</button>
-
-<ng-template #tpl let-data="data">
-  <div class="bg-white p-4 rounded-md shadow shadow-black inline-block">
-    <span>This is a template reference</span> <br />
-    <pre><code>{{ data }}</code></pre>
+<ng-template #tpl let-close="close" let-data="data">
+  <div class="bg-white p-4 shadow shadow-black/50 rounded">
+    <div>This is a custom template</div>
+    <div>Data : {{ data }}</div>
+    <button (click)="close()">❌</button>
   </div>
 </ng-template>
