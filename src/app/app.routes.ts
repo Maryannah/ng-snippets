@@ -7,6 +7,7 @@ const appRoutes = {
   formfield: (relpath = '') => `${relpath}form-field`,
   anchors: (relpath = '') => `${relpath}anchors`,
   notifications: (relpath = '') => `${relpath}notifications`,
+  dialogs: (relpath = '') => `${relpath}dialogs`,
 };
 
 export const APP_ROUTES = new InjectionToken('NgSnippetsApplicationRoutes', { factory: () => appRoutes });
@@ -23,9 +24,9 @@ export const routes: Route[] = [
     loadComponent: () => import('./pages/notifications/notifications.component'),
   },
   {
-    data: { label: 'Overlays' },
-    path: appRoutes.overlays(),
-    loadComponent: () => import('./pages/overlays/overlays.component'),
+    data: { label: 'Dialogs' },
+    path: appRoutes.dialogs(),
+    loadComponent: () => import('./pages/dialogs/dialogs.component'),
   },
   {
     data: { label: 'Datepicker' },

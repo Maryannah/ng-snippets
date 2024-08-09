@@ -26,9 +26,22 @@ export type AppNotification = {
   duration: number;
 };
 
+/** Use this composable function to provide notifications to your overlays
+ *
+ * @example
+ * ```typescript
+ * class MyClass {
+ *   notifications = provideOverlays(withNotifications());
+ * }
+ * ```
+ */
 export function withNotifications(baseConfiguration?: Partial<AppNotification>) {
   return function ({ initContainer, createComponent, createContainer }: OverlayExtensionHelperArg) {
     return {
+      /** Creates a notification for the user
+       *
+       * @param configuration The optional configuration of the notification
+       */
       notify(configuration?: Partial<AppNotification>) {
         const notification: AppNotification = {
           duration: 3000,

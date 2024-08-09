@@ -13,9 +13,22 @@ const styles = `.__${containerName} {
   height: 100%;
 }`;
 
-export function withAnchors<D>(
-  baseConfiguration: AnchorConfiguration<D> = { capturePointer: false, anchoring: 'auto' },
-) {
+/** Use this composable function to provide anchors to your overlays.
+ *
+ * Anchors are HTML elements that are positioned according to their target element.
+ *
+ * They are out of the flow of the page, and get closed if you click/scroll/swipe outside of them.
+ *
+ * They are useful for making things like popovers, dropdowns, etc.
+ *
+ * @example
+ * ```typescript
+ * class MyClass {
+ *   anchors = provideOverlays(withAnchors());
+ * }
+ * ```
+ */
+export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D>>) {
   return function ({
     initContainer,
     createComponent,
@@ -24,13 +37,24 @@ export function withAnchors<D>(
     createContainer,
   }: OverlayExtensionHelperArg) {
     return {
-      anchorTo<T = any, D = any>(
+      /** Anchors the given portal to the given element, with the given configuration.
+       *
+       * @param anchorElement The target element the anchor should be anchored to
+       * @param portal The portal to display (component class / template ref)
+       * @param configuration The optional configuration of the anchor
+       */
+      anchorTo<T = any, DD = any>(
         anchorElement: ElementRef<HTMLElement> | HTMLElement,
         portal: OverlayPortal<T, D>,
-        configuration?: AnchorConfiguration<D>,
+        configuration?: Partial<AnchorConfiguration<D>>,
       ) {
         const host = initContainer();
-        const config = { ...baseConfiguration, ...configuration };
+        const config: AnchorConfiguration<any> = {
+          anchoring: 'auto',
+          capturePointer: false,
+          ...baseConfiguration,
+          ...configuration,
+        };
         const element = anchorElement instanceof ElementRef ? anchorElement.nativeElement : anchorElement;
         const container = createContainer(containerName, styles);
         host.appendChild(container);

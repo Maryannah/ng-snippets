@@ -1,13 +1,10 @@
-import { DOCUMENT, NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
+import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import {
-  createComponent as _createComponent,
-  ApplicationRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentRef,
   DestroyRef,
-  EnvironmentInjector,
   inject,
   InjectionToken,
   Injector,
@@ -19,12 +16,11 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, single, Subject, take, takeUntil, timer } from 'rxjs';
+import { filter, Subject, take } from 'rxjs';
+import { ActionEmitter, OverlayExtensionHelperArg, OverlayPortal } from './overlays.common';
 
-/** @internal global overlays container */
-let overlaysContainer: HTMLElement;
-/** @internal dialogs displayer */
-let dialogsComponent: ComponentRef<DialogsComponent>;
+const containerName = 'dialogs-container';
+let component: ComponentRef<DialogsComponent>;
 
 /** Use this token to inject your dialog data into your component */
 export const DIALOG_DATA = new InjectionToken<any>('NgSnippetsDialogData');
@@ -48,108 +44,57 @@ export type AppDialog<T, C> = {
   configuration: AppDialogConfig;
 };
 
-/**
- * Use this function to inject the dialogs manager and display dialogs to the user
+/** Use this composable function to provide notifications to your overlays.
+ * 
+ * Dialogs are overlays that are displayed on a dark backdrop to get the focus of the user.
  *
- * @param {AppDialogConfig} base Optional default configuration for each dialog
- * @see {@link AppDialogConfig} The configuration for a dialog
- * @example ```typescript
- * class MyComponent {
- *   private dialogs = injectDialogs();
- *   private dialogs = injectDialogs({ backdropClose: false });
+ * @example
+ * ```typescript
+ * class MyClass {
+ *   dialogs = provideOverlays(withDialogs());
  * }
  * ```
  */
-export function injectDialogs(base: AppDialogConfig = { backdropClose: true, navigationClose: true }) {
-  const appRef = inject(ApplicationRef);
-  const injector = inject(EnvironmentInjector);
-  const document = inject(DOCUMENT);
-  const body = document.body;
+export function withDialogs(baseConfiguration?: Partial<AppDialogConfig>) {
+  return function ({ initContainer, createComponent, createContainer }: OverlayExtensionHelperArg) {
+    return {
+      /** Opens a dialog for the user
+       * 
+       * @param portal The portal to display (component class / template ref)
+       * @param data Optional data to pass to the component
+       * @param configuration Optional configuration
+       */
+      dialog(portal: OverlayPortal<any, any>, data?: any, configuration?: Partial<AppDialogConfig>) {
+        const config: AppDialogConfig = {
+          backdropClose: true,
+          navigationClose: true,
+          ...baseConfiguration,
+          ...configuration,
+        };
 
-  return {
-    /**
-     * Displays a dialog to the user
-     * @returns The dialog created, a handle to close it, and an event triggered when it gets closed
-     */
-    add<T, C>(portal: AppDialogPortal<T, C>, data: any = null!, configuration?: Partial<AppDialogConfig>) {
-      const _dialog = dialog(body, appRef, injector, portal, data, { ...base, ...configuration });
-      return {
-        dialog: _dialog,
-        closed: _dialog.__closeEmitter!.asObservable().pipe(take(1)),
-        close() {
-          return dialogsComponent.instance.removeDialog(_dialog);
-        },
-      };
-    },
-    /** Removes a given dialog */
-    remove<T, C>(dialog: AppDialog<T, C>) {
-      return dialogsComponent?.instance.removeDialog(dialog);
-    },
-    /** Removes all dialogs */
-    clear() {
-      return dialogsComponent?.instance.clearDialogs();
-    },
+        const host = initContainer();
+        const container = createContainer(containerName);
+        host.appendChild(container);
+
+        if (!component) {
+          component = createComponent(DialogsComponent, container);
+          component.instance.allDismissed.subscribe(() => {
+            component.destroy();
+            component = undefined!;
+          });
+        }
+
+        component.instance.addDialog(portal, data, config);
+      },
+    };
   };
 }
-
-/** @internal Actual dialog function */
-function dialog<T, C>(
-  body: HTMLElement,
-  appRef: ApplicationRef,
-  injector: EnvironmentInjector,
-  portal: AppDialogPortal<T, C>,
-  data: any,
-  configuration: AppDialogConfig,
-) {
-  ensureContainerExists(body);
-  dialogsComponent = dialogsComponent ?? createComponent(DialogsComponent, appRef, injector);
-  dialogsComponent.instance.allDismissed.subscribe(() => {
-    dialogsComponent?.destroy();
-    dialogsComponent = undefined!;
-    overlaysContainer = setContainerState(overlaysContainer)!;
-  });
-  return dialogsComponent.instance.addDialog(portal, data, configuration);
-}
-
-/** @internal Creates the overlays main container when needed */
-function ensureContainerExists(container: HTMLElement) {
-  if (overlaysContainer) return;
-  const div = document.createElement('div');
-  div.classList.add('__overlay-body-container');
-  container.appendChild(div);
-  overlaysContainer = div;
-}
-
-/** @internal Removes the overlays main container when needed */
-function setContainerState(container: HTMLElement) {
-  if (!container) return undefined;
-  if (container.hasChildNodes()) return container;
-  container.remove();
-  return undefined;
-}
-
-/** @internal Creates the given component and attaches it to the overlays container */
-function createComponent<T = any>(
-  component: Type<T>,
-  appRef: ApplicationRef,
-  environmentInjector: EnvironmentInjector,
-) {
-  const element = document.createElement('div');
-  overlaysContainer.appendChild(element);
-  const ref = _createComponent(component, { hostElement: element, environmentInjector });
-  appRef.attachView(ref.hostView);
-  return ref;
-}
-
-/** @internal */
-type ActionEmitter = { __closeEmitter: Subject<void> };
 
 /** @internal Component that shows the dialogs */
 @Component({
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet, NgComponentOutlet],
-  host: { '[class.__dialogs-container]': 'true' },
   template: `<div class="__backdrop" (click)="backdropClick()"></div>
     @let current = currentDialog();
     @let currentIndex = dialogs().indexOf(current);
@@ -173,6 +118,52 @@ type ActionEmitter = { __closeEmitter: Subject<void> };
         }
       </div>
     }`,
+  styles: `
+    :host {
+      position: absolute;
+      z-index: 2500;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-flow: row;
+      align-items: flex-end;
+      justify-content: flex-start;
+      gap: 1rem;
+      pointer-events: all; /* IMPORTANT: Allows user to interact with the backdrop & dialogs */
+
+      .__backdrop {
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(black, 0.5);
+      }
+
+      .__panel {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        translate: -50% -50%;
+        z-index: 1;
+        background-color: white;
+        box-shadow: 1px 1px 3px 1px rgba(black, 0.5);
+        padding: 1rem;
+        border-radius: 0.25rem;
+
+        &.__hidden {
+          margin-top: -1rem;
+          top: 100%;
+          left: 1rem;
+          translate: 0%;
+          cursor: pointer;
+        }
+      }
+    }
+  `,
 })
 class DialogsComponent {
   private router = inject(Router, { optional: true });
@@ -183,7 +174,7 @@ class DialogsComponent {
 
   public allDismissed = output<void>();
 
-  addDialog<T, C>(portal: AppDialogPortal<T, C>, data: any, configuration: AppDialogConfig) {
+  addDialog<T, C>(portal: OverlayPortal<T, C>, data: any, configuration: AppDialogConfig) {
     const dialog: AppDialog<T, C> & Partial<ActionEmitter> = <any>{}; // Workaround to inject the closeProvider after injector creation
     const dataProvider: Provider = { provide: DIALOG_DATA, useValue: data };
     const closeProvider: Provider = { provide: DIALOG_CLOSE_FN, useValue: () => this.removeDialog(dialog) };
@@ -234,11 +225,11 @@ class DialogsComponent {
     this.removeDialog(dialog);
   }
 
-  protected isTemplate<T, C>(portal: AppDialogPortal<T, C>): portal is TemplateRef<C> {
+  protected isTemplate<T, C>(portal: OverlayPortal<T, C>): portal is TemplateRef<any> {
     return portal instanceof TemplateRef;
   }
 
-  protected isComponent<T, C>(portal: AppDialogPortal<T, C>): portal is Type<T> {
+  protected isComponent<T, C>(portal: OverlayPortal<T, C>): portal is Type<T> {
     return !this.isTemplate(portal);
   }
 }

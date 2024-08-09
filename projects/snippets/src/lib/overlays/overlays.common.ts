@@ -61,6 +61,19 @@ export type OverlayExtensionHelperArg = {
   scrollOutside: (container: HTMLElement) => Observable<any>;
 };
 
+/** Use this function to provides overlay features to your Angular element.
+ *
+ * @example 
+ * ```typescript
+ * class MyClass {
+ *   dialogs = provideOverlays(withDialogs());
+ *   anchors = provideOverlays(withAnchors());
+ *   notifications = provideOverlays(withNotifications());
+ *
+ *   overlays = provideOverlays(withDialogs(), withAnchors(), withNotifications());
+ * }
+ * ```
+ */
 export function provideOverlays<T extends any[]>(...extensions: T): Composable<T> {
   const injector = inject(EnvironmentInjector);
   const appRef = inject(ApplicationRef);
