@@ -35,6 +35,7 @@ They are made to work without additional development, but for the best results, 
 ## About the styles ...
 
 For your convenience, but also for basic structure/behavior, some features have SCSS files alongside them.  
+(Either that, or the styles are coded into the Typescript files themselves)
 You can copy & paste them like you would do for the feature, and edit them to your needs.  
 Simply keep in mind that if you see an `// IMPORTANT` comment, you should take the time to read it !
 

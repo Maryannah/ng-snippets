@@ -4,6 +4,9 @@ _<sup>(Overlay : piece of HTML that floats above the rest of the application)</s
 
 Overlays are defined by a composable function, that does nothing by itself, but when composed, it provides multiple features.
 
+**IMPORTANT** You need to have `overlays.common.ts` to use the other `*.overlays.ts` files !  
+Also, this file is useless by itself, it's made to provide commonized behavior between overlays.
+
 ```typescript
 class MyClass {
   dialogs = provideOverlays(withDialogs());

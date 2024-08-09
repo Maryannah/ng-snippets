@@ -81,6 +81,18 @@ export const FIELD_ERRORS = new InjectionToken<Record<string, string>>('NgSnippe
 
       border-color: black;
 
+      .__prefix,
+      .__suffix,
+      .__input,
+      .__label,
+      .__hint,
+      .__errors {
+        place-self: stretch center;
+        border: 1px solid;
+        border-color: inherit;
+        padding: 0.25rem;
+      }
+
       .__errors {
         grid-area: errors;
         display: flex;
@@ -91,6 +103,7 @@ export const FIELD_ERRORS = new InjectionToken<Record<string, string>>('NgSnippe
         color: red;
         font-size: smaller;
         place-self: stretch;
+        margin-top: -1px;
 
         &:not(:empty) {
           ~ .__hint {
@@ -110,22 +123,12 @@ export const FIELD_ERRORS = new InjectionToken<Record<string, string>>('NgSnippe
         }
       }
 
-      .__prefix,
-      .__suffix,
-      .__input {
-        place-self: stretch center;
-        border: 1px solid;
-        border-color: inherit;
-        border-radius: 0.25rem;
-        padding: 0.25rem;
-      }
-
       .__hint {
         grid-area: errors;
         place-self: center stretch;
         text-align: end;
         font-size: smaller;
-        opacity: 0.5;
+        margin-top: -1px;
       }
 
       .__prefix {
@@ -156,7 +159,8 @@ export const FIELD_ERRORS = new InjectionToken<Record<string, string>>('NgSnippe
         grid-area: label;
         font-size: smaller;
         font-weight: bold;
-        place-self: center start;
+        place-self: stretch;
+        margin-bottom: -1px;
       }
 
       .__input {
