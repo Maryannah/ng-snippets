@@ -1,5 +1,10 @@
 # Form field
 
+```bash
+# Snippet grabbing
+node snipgrab forms/form-field/form-field.scam.ts
+```
+
 Improved form field that creates a smooth UI/UX for the user, instead of a basic input :
 
 - label for the input

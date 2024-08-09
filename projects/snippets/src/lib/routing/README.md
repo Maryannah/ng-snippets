@@ -1,5 +1,10 @@
 # Routing helpers
 
+```bash
+# Snippet grabbing
+node snipgrab routing/app.routes.ts
+```
+
 ## Application routes
 
 Centralizes all of your application links for easy use.  

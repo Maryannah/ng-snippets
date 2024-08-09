@@ -14,12 +14,22 @@
 
 ## How to use
 
+**Method 1 : manual install**
+
 - Find a snippet you like/want in the [list of snippets](#list-of-features)
 - Click on the corresonding link
 - Copy & paste the files you need for the feature to work
   - The corresponding `.ts` file
   - Sometimes, the `.scss` file (if needed, it will have the same name as the `.ts` one)
 - Enjoy the snippet in your own project
+
+**Method 2 : snippet grabber**
+
+- Get the [snippet-grabber](./snipgrab.js)
+- Place it at the root of your project
+- (Optional) .gitignore it & customize it
+- Find a snippet you like/want in the [list of snippets](#list-of-features)
+- Run the snippet grabbing command given in its `README` file
 
 ## Disclaimer
 

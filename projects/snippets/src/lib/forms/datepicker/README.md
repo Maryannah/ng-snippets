@@ -1,5 +1,10 @@
 # Datepicker
 
+```bash
+# Snippet grabbing
+node snipgrab forms/datepicker/datepicker.component.ts
+```
+
 Simple & efficient date picker with better control than an input of `type="date"`.
 
 Accepts a `FormControl`/`NgModel` directive, but can work without it (emits a `(dateChange)` event).

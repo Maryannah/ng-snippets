@@ -1,5 +1,13 @@
 # Overlays
 
+```bash
+# Snippet grabbing
+node snipgrab overlays/overlays.common.ts \
+  overlays/anchors.overlays.ts \
+  overlays/dialogs.overlays.ts \
+  overlays/notifications.overlays.ts
+```
+
 _<sup>(Overlay : piece of HTML that floats above the rest of the application)</sup>_
 
 Overlays are defined by a composable function, that does nothing by itself, but when composed, it provides multiple features.
