@@ -1,0 +1,31 @@
+<form #form="ngForm" class="inline-grid grid-cols-2 items-center justify-items-stretch gap-4">
+  <span>Message</span>
+  <input designed type="text" [(ngModel)]="config.message" name="message" />
+
+  <div>
+    <span> Duration (ms) </span>
+    <small>(0 = infinite)</small>
+  </div>
+  <input designed type="number" [(ngModel)]="config.duration" name="duration" />
+
+  <span>Type</span>
+  <select designed [(ngModel)]="config.type" name="type">
+    <option [ngValue]="undefined">No type</option>
+    <option value="info">Info</option>
+    <option value="success">Success</option>
+    <option value="error">Error</option>
+  </select>
+
+  <span>Dismissable by click</span>
+  <input designed type="checkbox" [(ngModel)]="config.dismissable" name="dismissable" />
+
+  <span>Use template</span>
+  <input designed type="checkbox" #useTemplate />
+
+  <button type="submit" class="place-self-start" designed (click)="notify(useTemplate.checked)">Notification</button>
+</form>
+
+<ng-template #tpl>
+  <span>This is a custom notification template</span>
+  <button designed>❌</button>
+</ng-template>

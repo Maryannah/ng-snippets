@@ -1,7 +1,7 @@
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, ElementRef, model, TemplateRef } from '@angular/core';
 import { race, take } from 'rxjs';
-import { OverlayExtension, OverlayPortal } from './overlays.common';
+import { OverlayExtensionHelperArg, OverlayPortal } from './overlays.common';
 
 const containerName = 'anchors-container';
 const styles = `.__${containerName} {
@@ -15,8 +15,14 @@ const styles = `.__${containerName} {
 
 export function withAnchors<D>(
   baseConfiguration: AnchorConfiguration<D> = { capturePointer: false, anchoring: 'auto' },
-): OverlayExtension {
-  return function ({ initContainer, createComponent, clickOutside, scrollOutside, createContainer }) {
+) {
+  return function ({
+    initContainer,
+    createComponent,
+    clickOutside,
+    scrollOutside,
+    createContainer,
+  }: OverlayExtensionHelperArg) {
     return {
       anchorTo<T = any, D = any>(
         anchorElement: ElementRef<HTMLElement> | HTMLElement,

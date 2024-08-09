@@ -2,12 +2,10 @@ import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, TemplateRef } from '@angular/core';
 import {
   AppDialogConfig,
-  AppNotification,
   DIALOG_CLOSE_FN,
   DIALOG_DATA,
   injectDialogs,
-  injectNotifications,
-} from '@snippets/overlays/overlays.utils';
+} from '@snippets/overlays_old/overlays.utils';
 
 @Component({
   selector: 'snip-overlays',
@@ -18,13 +16,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class OverlaysComponent {
-  private notifications = injectNotifications({ duration: 3000, dismissable: true, message: 'Notification !' });
   private dialogs = injectDialogs({ backdropClose: true, navigationClose: true });
-
-  notify(notification: Partial<AppNotification> = {}) {
-    const { closed } = this.notifications.add({ ...notification });
-    closed.subscribe(() => console.log('Notification dismissed'));
-  }
 
   dialog(template?: TemplateRef<any>, config?: Partial<AppDialogConfig>) {
     const data = { mode: template ? 'template' : 'component', number: Math.round(Math.random() * 100000) };

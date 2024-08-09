@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core';
-import { AnchorConfiguration, withAnchors } from '@snippets/anchors/anchors.overlays';
-import { provideOverlays } from '@snippets/anchors/overlays.common';
+import { AnchorConfiguration, withAnchors } from '@snippets/overlays/anchors.overlays';
+import { provideOverlays } from '@snippets/overlays/overlays.common';
 
 @Component({
   selector: 'snip-anchors',

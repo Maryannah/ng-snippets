@@ -6,6 +6,7 @@ const appRoutes = {
   datepicker: (relpath = '') => `${relpath}datepicker`,
   formfield: (relpath = '') => `${relpath}form-field`,
   anchors: (relpath = '') => `${relpath}anchors`,
+  notifications: (relpath = '') => `${relpath}notifications`,
 };
 
 export const APP_ROUTES = new InjectionToken('NgSnippetsApplicationRoutes', { factory: () => appRoutes });
@@ -15,6 +16,11 @@ export const routes: Route[] = [
     data: { label: 'Anchors' },
     path: appRoutes.anchors(),
     loadComponent: () => import('./pages/anchors/anchors.component'),
+  },
+  {
+    data: { label: 'Notifications' },
+    path: appRoutes.notifications(),
+    loadComponent: () => import('./pages/notifications/notifications.component'),
   },
   {
     data: { label: 'Overlays' },

@@ -1,4 +1,4 @@
-@use '../projects/snippets/src/lib/overlays/overlays';
+@use '../projects/snippets/src/lib/overlays_old/overlays';
 
 @tailwind base;
 @tailwind components;
@@ -18,4 +18,12 @@ body {
 button[designed] {
   @apply border-2 border-primary-500 text-primary-500 font-semibold;
   @apply px-4 py-2 rounded-lg;
+}
+
+input[designed],
+select[designed] {
+  @apply border border-primary-500 py-2 px-4 rounded-lg;
+  &[type='checkbox'] {
+    text-align: left;
+  }
 }

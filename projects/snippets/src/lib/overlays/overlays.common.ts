@@ -8,7 +8,7 @@ import {
   TemplateRef,
   Type,
 } from '@angular/core';
-import { filter, fromEvent, map, Observable, race, repeat, take, zip } from 'rxjs';
+import { filter, fromEvent, map, Observable, race, repeat, Subject, take, zip } from 'rxjs';
 
 // Global variables that act as singletons
 const mainContainerName = 'overlays-container';
@@ -26,11 +26,14 @@ const styles = `.__${mainContainerName} {
   pointer-events: none;
 }`;
 
+/** @internal */
+export type ActionEmitter = { __closeEmitter: Subject<void> };
+
 /** @internal Accepted types for creating overlays (component class / template ref) */
 export type OverlayPortal<T, D> = Type<T> | TemplateRef<{ data: D }>;
 
-/** @internal */
-type OverlayExtensionArgs = {
+/** @internal Helper argument passed to overlay extensions */
+export type OverlayExtensionHelperArg = {
   /**
    * Initializes the main container, used to hold overlays
    *
@@ -58,16 +61,13 @@ type OverlayExtensionArgs = {
   scrollOutside: (container: HTMLElement) => Observable<any>;
 };
 
-/** @internal Type that extensions must implement to be used with `provideOverlays` */
-export type OverlayExtension<T = any> = (args: OverlayExtensionArgs) => T;
-
 export function provideOverlays<T extends any[]>(...extensions: T): Composable<T> {
   const injector = inject(EnvironmentInjector);
   const appRef = inject(ApplicationRef);
   const doc = inject(DOCUMENT);
   const body = doc.body;
 
-  const helper: OverlayExtensionArgs = {
+  const helper: OverlayExtensionHelperArg = {
     initContainer: () => createManagedContainer(mainContainerName, doc, body, styles),
     createContainer: (id, style) => createManagedContainer(id, doc, body, style),
     createComponent: (component, container) => createComponent(component, injector, appRef, container),
@@ -75,7 +75,7 @@ export function provideOverlays<T extends any[]>(...extensions: T): Composable<T
     scrollOutside: (container) => scrolledOutside(doc, container),
   };
 
-  const ret: any = {};
+  const ret: Composable<T> = {} as any;
   for (const extension of extensions) Object.assign(ret, extension(helper));
   return ret;
 }

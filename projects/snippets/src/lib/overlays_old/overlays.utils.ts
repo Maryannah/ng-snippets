@@ -23,8 +23,6 @@ import { filter, single, Subject, take, takeUntil, timer } from 'rxjs';
 
 /** @internal global overlays container */
 let overlaysContainer: HTMLElement;
-/** @internal notifications displayer */
-let notificationsComponent: ComponentRef<NotificationsComponent>;
 /** @internal dialogs displayer */
 let dialogsComponent: ComponentRef<DialogsComponent>;
 
@@ -32,16 +30,6 @@ let dialogsComponent: ComponentRef<DialogsComponent>;
 export const DIALOG_DATA = new InjectionToken<any>('NgSnippetsDialogData');
 /** Use this token to get a function used to close the dialog from within itself */
 export const DIALOG_CLOSE_FN = new InjectionToken<() => void>('NgSnippetsDialogCloseFunction');
-
-export type AppNotification = {
-  template?: TemplateRef<any>; // TemplateRef takes precedence over message
-  message?: string;
-  type?: 'error' | 'info' | 'success';
-  /** If the user is allowed to close the notification himself */
-  dismissable: boolean;
-  /** Duration in milliseconds, set to `0` to make it infinite */
-  duration: number;
-};
 
 /** @internal */
 type AppDialogPortal<T, C> = Type<T> | TemplateRef<C>;
@@ -59,50 +47,6 @@ export type AppDialog<T, C> = {
   context: C;
   configuration: AppDialogConfig;
 };
-
-/**
- * Use this function to inject the notifications manager and display notifications to the user
- *
- * @param {AppNotification} base Optional default configuration for each notification
- * @see {@link AppNotification} The configuration for a notification
- * @example ```typescript
- * class MyComponent {
- *   private notifications = injectNotifications();
- *   private notifications = injectNotifications({ duration: 300 });
- * }
- * ```
- */
-export function injectNotifications(base: AppNotification = { dismissable: true, duration: 3000 }) {
-  const appRef = inject(ApplicationRef);
-  const injector = inject(EnvironmentInjector);
-  const document = inject(DOCUMENT);
-  const body = document.body;
-
-  return {
-    /**
-     * Displays a notification to the user
-     * @returns The notification created, a handle to close it, and an event triggered when it gets closed
-     */
-    add(notification: Partial<AppNotification>) {
-      const _notification = { ...base, ...notification };
-      return {
-        notification: _notification,
-        closed: notify(body, appRef, injector, _notification),
-        close() {
-          return notificationsComponent.instance.removeNotification(_notification);
-        },
-      };
-    },
-    /** Removes a given notification */
-    remove(notification: AppNotification) {
-      return notificationsComponent?.instance.removeNotification(notification);
-    },
-    /** Removes all notifications */
-    clear() {
-      return notificationsComponent?.instance.clearNotifications();
-    },
-  };
-}
 
 /**
  * Use this function to inject the dialogs manager and display dialogs to the user
@@ -146,25 +90,6 @@ export function injectDialogs(base: AppDialogConfig = { backdropClose: true, nav
       return dialogsComponent?.instance.clearDialogs();
     },
   };
-}
-
-/** @internal Actual notification function */
-function notify(
-  body: HTMLElement,
-  appRef: ApplicationRef,
-  injector: EnvironmentInjector,
-  notification: AppNotification,
-) {
-  ensureContainerExists(body);
-  notificationsComponent = notificationsComponent ?? createComponent(NotificationsComponent, appRef, injector);
-
-  notificationsComponent.instance.allDismissed.subscribe(() => {
-    notificationsComponent?.destroy();
-    notificationsComponent = undefined!;
-    overlaysContainer = setContainerState(overlaysContainer)!;
-  });
-
-  return notificationsComponent.instance.addNotification(notification);
 }
 
 /** @internal Actual dialog function */
@@ -218,61 +143,6 @@ function createComponent<T = any>(
 
 /** @internal */
 type ActionEmitter = { __closeEmitter: Subject<void> };
-
-/** @internal Component that shows the notifications */
-@Component({
-  standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet],
-  host: { '[class.__notifications-container]': 'true' },
-  template: `@for (notification of notifications(); track notification) {
-    <div
-      class="__notification"
-      [class.__dismissable]="notification.dismissable"
-      [attr.data-type]="notification.type"
-      (click)="notification.dismissable && removeNotification(notification)">
-      @if (notification.template) {
-        <ng-container
-          *ngTemplateOutlet="notification.template; context: { $implicit: templateClose(notification) }"></ng-container>
-      } @else if (notification.message) {
-        <span>{{ notification.message }}</span>
-      }
-    </div>
-  }`,
-})
-class NotificationsComponent {
-  private destroyRef = inject(DestroyRef);
-  private notificationsCollection = new Set<AppNotification>();
-  protected notifications = signal<AppNotification[]>([]);
-  public allDismissed = output<void>();
-
-  /** @internal Function used when using a templateRef */
-  protected templateClose = (n: AppNotification) => () => this.removeNotification(n);
-
-  addNotification(notification: AppNotification & Partial<ActionEmitter>) {
-    this.notificationsCollection.add(notification);
-    this.notifications.set(Array.from(this.notificationsCollection));
-    notification.__closeEmitter = new Subject<void>();
-    if (notification.duration)
-      timer(notification.duration)
-        .pipe(takeUntilDestroyed(this.destroyRef), takeUntil(notification.__closeEmitter), take(1))
-        .subscribe(() => notificationsComponent?.instance.removeNotification(notification));
-    return notification.__closeEmitter.asObservable().pipe(take(1));
-  }
-
-  removeNotification(notification: AppNotification & Partial<ActionEmitter>) {
-    notification.__closeEmitter?.next();
-    this.notificationsCollection.delete(notification);
-    this.notifications.set(Array.from(this.notificationsCollection));
-    if (!this.notificationsCollection.size) this.allDismissed.emit();
-  }
-
-  clearNotifications() {
-    this.notificationsCollection.clear();
-    this.notifications.set([]);
-    this.allDismissed.emit();
-  }
-}
 
 /** @internal Component that shows the dialogs */
 @Component({
