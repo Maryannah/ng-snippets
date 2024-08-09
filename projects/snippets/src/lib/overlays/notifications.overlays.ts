@@ -26,13 +26,11 @@ export type AppNotification = {
   duration: number;
 };
 
-/** Use this composable function to provide notifications to your overlays
+/** ---
+ * Provide notification functions to the overlays composable
  *
- * @example
  * ```typescript
- * class MyClass {
- *   notifications = provideOverlays(withNotifications());
- * }
+ * class MyClass { notifications = provideOverlays(withNotifications()); }
  * ```
  */
 export function withNotifications(baseConfiguration?: Partial<AppNotification>) {
@@ -65,12 +63,16 @@ export function withNotifications(baseConfiguration?: Partial<AppNotification>) 
           });
         }
 
-        const { close, closed } = createHandler(null, () => component.instance.removeNotification(notification));
+        const { close, closed, context } = createHandler(null, () =>
+          component.instance.removeNotification(notification),
+        );
 
-        component.instance.addNotification(notification);
+        component.instance.addNotification(notification, context);
 
         return { close, closed };
       },
+      /** Removes all opened notifications */
+      clear: () => component.instance.clearNotifications(),
     };
   };
 }
@@ -87,8 +89,7 @@ export function withNotifications(baseConfiguration?: Partial<AppNotification>) 
       [attr.data-type]="notification.type"
       (click)="notification.dismissable && removeNotification(notification)">
       @if (notification.template) {
-        <ng-container
-          *ngTemplateOutlet="notification.template; context: { $implicit: templateClose(notification) }"></ng-container>
+        <ng-container *ngTemplateOutlet="notification.template; context: notification.context"></ng-container>
       } @else if (notification.message) {
         <span>{{ notification.message }}</span>
       }
@@ -97,7 +98,7 @@ export function withNotifications(baseConfiguration?: Partial<AppNotification>) 
   styles: `
     :host {
       position: absolute;
-      z-index: 5000;
+      z-index: 2;
       top: 0;
       left: 0;
       height: 100%;
@@ -140,22 +141,21 @@ export function withNotifications(baseConfiguration?: Partial<AppNotification>) 
 })
 class NotificationsComponent {
   private destroyRef = inject(DestroyRef);
-  private notificationsCollection = new Set<AppNotification>();
-  protected notifications = signal<AppNotification[]>([]);
+  private notificationsCollection = new Set<AppNotification & { context?: any }>();
+  protected notifications = signal<(AppNotification & { context?: any })[]>([]);
   public allDismissed = output<void>();
 
-  /** @internal Function used when using a templateRef */
-  protected templateClose = (n: AppNotification) => () => this.removeNotification(n);
-
-  addNotification(notification: AppNotification & Partial<ActionEmitter>) {
-    this.notificationsCollection.add(notification);
+  addNotification(notification: AppNotification & Partial<ActionEmitter>, context: any) {
+    console.log(context);
+    const notificationWithContext = { ...notification, context };
+    this.notificationsCollection.add(notificationWithContext);
     this.notifications.set(Array.from(this.notificationsCollection));
-    notification.__closeEmitter = new Subject<void>();
-    if (notification.duration)
-      timer(notification.duration)
-        .pipe(takeUntilDestroyed(this.destroyRef), takeUntil(notification.__closeEmitter), take(1))
-        .subscribe(() => this.removeNotification(notification));
-    return notification.__closeEmitter.asObservable().pipe(take(1));
+    notificationWithContext.__closeEmitter = new Subject<void>();
+    if (notificationWithContext.duration)
+      timer(notificationWithContext.duration)
+        .pipe(takeUntilDestroyed(this.destroyRef), takeUntil(notificationWithContext.__closeEmitter), take(1))
+        .subscribe(() => this.removeNotification(notificationWithContext));
+    return notificationWithContext.__closeEmitter.asObservable().pipe(take(1));
   }
 
   removeNotification(notification: AppNotification & Partial<ActionEmitter>) {

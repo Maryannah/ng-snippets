@@ -25,7 +25,7 @@
   <button type="submit" class="place-self-start" designed (click)="notify(useTemplate.checked)">Notification</button>
 </form>
 
-<ng-template #tpl>
+<ng-template #tpl let-close="close">
   <span>This is a custom notification template</span>
-  <button designed>❌</button>
+  <button designed (click)="close()">❌</button>
 </ng-template>

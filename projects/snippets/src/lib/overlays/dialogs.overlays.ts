@@ -27,22 +27,18 @@ export type AppDialogConfig = {
   navigationClose: boolean;
 };
 
-export type AppDialog<T, C> = {
+type AppDialog<T, C> = {
   portal: OverlayPortal<T, C>;
   injector: Injector;
   context: C;
   configuration: AppDialogConfig;
 };
 
-/** Use this composable function to provide notifications to your overlays.
+/** ---
+ * Provide dialog functions to the overlays composable
  *
- * Dialogs are overlays that are displayed on a dark backdrop to get the focus of the user.
- *
- * @example
  * ```typescript
- * class MyClass {
- *   dialogs = provideOverlays(withDialogs());
- * }
+ * class MyClass { dialogs = provideOverlays(withDialogs()); }
  * ```
  */
 export function withDialogs(baseConfiguration?: Partial<AppDialogConfig>) {
@@ -80,6 +76,7 @@ export function withDialogs(baseConfiguration?: Partial<AppDialogConfig>) {
 
         return { close, closed };
       },
+      clear: () => component.instance.clearDialogs(),
     };
   };
 }
@@ -104,7 +101,7 @@ export function withDialogs(baseConfiguration?: Partial<AppDialogConfig>) {
         [class.__hidden]="!isCurrent"
         [style.translate.%]="translate"
         [style.margin-left.rem]="margin"
-        (click)="setActiveDialog(dialog)">
+        (click)="!isCurrent && setActiveDialog(dialog)">
         @if (isComponent(dialog.portal)) {
           <ng-container *ngComponentOutlet="dialog.portal; injector: dialog.injector"></ng-container>
         } @else if (isTemplate(dialog.portal)) {
@@ -115,7 +112,7 @@ export function withDialogs(baseConfiguration?: Partial<AppDialogConfig>) {
   styles: `
     :host {
       position: absolute;
-      z-index: 2500;
+      z-index: 1;
       top: 0;
       left: 0;
       height: 100%;

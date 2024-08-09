@@ -3,7 +3,9 @@ import { ChangeDetectionStrategy, Component, computed, ElementRef, Injector, mod
 import { race, take } from 'rxjs';
 import { OverlayExtensionHelperArg, OverlayPortal } from './overlays.common';
 
+/** @internal */
 const containerName = 'anchors-container';
+/** @internal */
 const styles = `.__${containerName} {
   position: absolute;
   z-index: 0;
@@ -13,19 +15,11 @@ const styles = `.__${containerName} {
   height: 100%;
 }`;
 
-/** Use this composable function to provide anchors to your overlays.
+/** ---
+ * Provide anchor functions to the overlays composable
  *
- * Anchors are HTML elements that are positioned according to their target element.
- *
- * They are out of the flow of the page, and get closed if you click/scroll/swipe outside of them.
- *
- * They are useful for making things like popovers, dropdowns, etc.
- *
- * @example
  * ```typescript
- * class MyClass {
- *   anchors = provideOverlays(withAnchors());
- * }
+ * class MyClass { anchors = provideOverlays(withAnchors()); }
  * ```
  */
 export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D>>) {
@@ -38,7 +32,8 @@ export function withAnchors<D>(baseConfiguration?: Partial<AnchorConfiguration<D
     createHandler,
   }: OverlayExtensionHelperArg) {
     return {
-      /** Anchors the given portal to the given element, with the given configuration.
+      /** ---
+       * Anchors the given portal to the given element, with the given configuration.
        *
        * @param anchorElement The target element the anchor should be anchored to
        * @param portal The portal to display (component class / template ref)
@@ -183,7 +178,7 @@ export type AnchoringPositionsX = 'left' | 'center' | 'right';
 export type AnchoringPositionsY = 'top' | 'middle' | 'bottom';
 export type AnchoringKeys = `${AnchoringPositionsY} ${AnchoringPositionsX}`;
 
-/** Anchor configuration that can be provided to `injectAnchors` or at every utuility function call */
+/** Anchor configuration that can be provided to `injectAnchors` or at every utility function call */
 export type AnchorConfiguration<D> = Partial<{
   data: D;
   /**

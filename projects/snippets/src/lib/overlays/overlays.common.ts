@@ -180,10 +180,10 @@ function scrolledOutside(doc: Document, container: HTMLElement) {
 }
 
 /** @internal Function that creates overlay handlers & data handlers for the extensions */
-function createOverlayHandler<D>(data: D, closingFn: () => void) {
-  const emitter = new Subject<void>();
+function createOverlayHandler<D, C>(data: D, closingFn: (value?: C) => void) {
+  const emitter = new Subject<C | undefined | null | void>();
   const closed = emitter.asObservable().pipe(take(1));
-  const close = () => (closingFn(), emitter.next(), emitter.complete());
+  const close = (value?: C) => (closingFn(value), emitter.next(value), emitter.complete());
 
   const context = { data, close };
 
